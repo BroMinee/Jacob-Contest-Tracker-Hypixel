@@ -1,7 +1,7 @@
 <h1 align="center">Jacob Contest Tracker on Hypixel</h1>
 <div align="center">
 <img src="example.gif">
-<p>(An example the script running without error)</p>
+<p>(An example the script running without error (speed up from 20 seconds to 8 seconds))</p>
 </div>
 
 
@@ -16,6 +16,13 @@ The bot is able to connect on mc.hypixel.net:25565, join Skyblock mode, open the
 
 
 ## How to run it
+First you need to install Node.js
+Then run both commands in your terminal to install dependency
+```bash
+npm install mineflayer
+npm install mineflayer-gui
+```
+
 Run main.js using
 ```bash
 node main.js
