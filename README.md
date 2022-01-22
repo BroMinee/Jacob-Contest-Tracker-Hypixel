@@ -1,4 +1,12 @@
-# Jacob Contest Tracker on Hypixel
+<h1 align="center">Jacob Contest Tracker on Hypixel</h1>
+<div align="center">
+<img src="example.gif">
+<p>(An example the script running without error)</p>
+</div>
+
+
+
+# What is this repo for ?
 This repo contains javascript file to extract every Jacob's contest on Hypixel Skyblock.
 
 ## How it works
