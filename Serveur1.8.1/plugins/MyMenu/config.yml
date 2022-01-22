@@ -1,9 +1,0 @@
-Plugin:
-  CheckForUpdates: true
-Menus:
-  welcome:
-    OpenOnJoin: false
-    GiveItemOnJoin: false
-  test:
-    OpenOnJoin: false
-    GiveItemOnJoin: false
