@@ -6,83 +6,99 @@ const fs = require("fs");
 
 var PLAYERINFO = {
 
-    username : 'YOUR@EMAIL.EXEMPLE' ,
+    username : 'YourMinecraftAccountEmail@EMAIL.EXAMPLE' , // TODO
     
-    password : 'YOUR MINECRAFT PASSWORD' ,
+    password : 'YourMinecraftAccountPassword' , // TODO
     
     host : 'mc.hypixel.net' ,
     
     port : 25565 ,
     
     version : '1.8.9',
-    auth: 'mojang'
+    auth: 'microsoft' // TODO use 'microsoft' or 'mojang'
     };
 
 
+// GENERAL VAR
 let firstContestTime = {time: 0,otherTimeFound: 0};
 let timeWhenOpenCalendar = 0;
+let scriptstared = parseInt(new Date().getTime()/1000); // this time will change everytime the bot type /skyblock
+let REALTIMESCRIPTSTARED = parseInt(new Date().getTime()/1000); // this will be unchanged
 let hasjoinSkyblock = 0;
-let scriptstared = parseInt(new Date().getTime()/1000) - 60;
-const bot = mineflayer.createBot(PLAYERINFO); // etc.
+
+// BOT INIT
+const bot = mineflayer.createBot(PLAYERINFO);
 bot.loadPlugin(gui.plugin);
 
-
+// This is trigger once (when the player connect the server)
 bot.once("spawn", () =>
 {
     console.log(`Join ${PLAYERINFO.host}:${PLAYERINFO.port} using ${PLAYERINFO.version}`);
 }
 )
 
+// This is trigger everytime a message in send in the IG-chat
 bot.on("message", async json => 
 {
     let message = json.toString();
-    if(message.includes("❤")) {return;}
+    if(message.includes("❤")) {return;} // Tellraw also trigger this function
 
     console.log(`${message}`);
+
+    if(message.includes("AFK.")) // It seems that we are AFK
+    {
+        console.log("It seems we are AFK")
+        bot.quit();
+    }
     
-
-    if (message.includes("SkyBlock!")) 
+    // To not spam the server when try to join skyblock using /skyblock only once every 10 seconds (in case the skyblock is unreacheable for some reason)
+    if (hasjoinSkyblock == 0)
     {
-        hasjoinSkyblock = 1;
-        console.log(`\t"${message}" was catch because it contains "SkyBlock!"`)
 
-        bot.chat("/calendar"); // The "/settings" command will bring up a GUI window.  
-    }
-    else if (message.includes("réclamées")) 
-    {
-        console.log(`\t"${message}" was catch because it contains "réclamées"`)
-
-        //bot.chat("/skyblock"); // The "/settings" command will bring up a GUI window.  
-    }
-    else if (message.includes("slid into the lobby!"))
-    {
-        console.log(`\t"${message}" was catch because it contains "slid into the lobby!"`)
-
-        if(hasjoinSkyblock == 0)
+        if (message.includes("SkyBlock!")) // We joined successfully the skyblock
         {
-            if(parseInt(new Date().getTime()/1000) > scriptstared + 60)
-            {
-                scriptstared = parseInt(new Date().getTime()/1000);
-                bot.chat("/skyblock");
-            }
+            hasjoinSkyblock = 1;
+            console.log(`\tSkyblock joined successfully`)
+
+            bot.chat("/calendar"); // The "/settings" command will bring up a GUI window.  
+        }
+
+        else if (parseInt(new Date().getTime()/1000) - REALTIMESCRIPTSTARED > 100)
+        {
+            console.log(`\tSkyblock seems unreachable leaving the server ...`)
+            bot.quit();
+        }
+
+        else if(parseInt(new Date().getTime()/1000) - scriptstared > 10)
+        {
+            console.log(`\t10 seconds passed since last attempt let try to join skyblock`)
+            scriptstared = parseInt(new Date().getTime()/1000);
+            bot.chat("/skyblock");
         }
         
+        else
+        {
+            console.log(`\tOnly ${parseInt(new Date().getTime()/1000) - scriptstared} seconds has not passed since last try and ${parseInt(new Date().getTime()/1000) - REALTIMESCRIPTSTARED} since the player joined the server!, waiting at least 10 seconds to not spam hypixel with command`)
+        }
     }
+
+    
     
 });
 
 
 
-
+// This function is trigger every time a Gui is open (like game selector, calendar, chest, furnace, ....)
 bot.on('windowOpen', async (window) => {
-    window.requiresConfirmation = false; // fix
-    //bot.chat(`${window.title}`)
-    //await bot.clickWindow(0, 0, 0);
+    window.requiresConfirmation = false; // Fix to work on server which uses spigot plugin to open GUI
+    
     console.log("\tNew Window detected : " + window.title.split("\":\"")[1].substring(0,window.title.split("\":\"")[1].length-2))
+    
+    
     if (window.title.includes("Calendar and Events"))
     {
         console.log("\t Main calendar has been opened !")
-        let compassSlot = GetCompassInCalendar(window);
+        let compassSlot = GetCompassInCalendar(window); // Get the slot when the compass is
         if (compassSlot == -1)
         {
             console.log("\tNo clock found");
@@ -90,8 +106,8 @@ bot.on('windowOpen', async (window) => {
         }
         else
         {
-            fs.writeFileSync('result.txt', "",err=> { 
-                if(err) { console.err; return;}});
+            fs.writeFileSync('result.csv', "",err=> { 
+                if(err) { console.err; return;}}); // clearing previous result.csv
             timeWhenOpenCalendar = parseInt(new Date().getTime()/1000);
             console.log(`\tEPOCH TIME = ${timeWhenOpenCalendar}`);
             await bot.clickWindow(compassSlot, 0, 0); // click on clock slot to open the next menu
@@ -108,7 +124,7 @@ bot.on('windowOpen', async (window) => {
         {
             console.log("\tNo more 'next arrow' now we can leave");
             bot.quit();
-            console.log("\tServer leaved... Results of scanning can be found in result.txt");
+            console.log("\tServer leaved... Results of scanning can be found in result.csv");
         }
         else
         {
@@ -167,7 +183,7 @@ function GetNextArrowInCalendar(window)
 function getEveryContest(window,firstContestTime)
 {
     if(window == null) return;
-    fs.appendFileSync('result.txt', window.title.split("\":\"")[1].substring(0,window.title.split("\":\"")[1].length-2) +";" + '\n',err=> { 
+    fs.appendFileSync('result.csv', window.title.split("\":\"")[1].substring(0,window.title.split("\":\"")[1].length-2) +";" + '\n',err=> { 
         if(err) { console.err; return;}});
 
     for(i = 0; i < window.slots.length;i++)
@@ -219,7 +235,7 @@ function getEveryContest(window,firstContestTime)
                     if (text.includes("Nether Wart")) {debugTxt += "Nether Wart;";}
                     if (text.includes("Cocoa Beans")) {debugTxt += "Cocoa Beans;";}
 
-                    fs.appendFileSync('result.txt', debugTxt + '\n',err=> { 
+                    fs.appendFileSync('result.csv', debugTxt + '\n',err=> { 
                         if(err) { console.err; return;}});
 
                     // console.log(debugTxt);

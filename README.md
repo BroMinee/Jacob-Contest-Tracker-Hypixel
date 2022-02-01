@@ -17,24 +17,21 @@ The bot is able to connect on mc.hypixel.net:25565, join Skyblock mode, open the
 
 ## How to run it
 First you need to install Node.js.
-Then run both commands in your terminal to install dependency
-```bash
-npm install mineflayer
-npm install mineflayer-gui
-```
-
-Run main.js using
+One Node.js is installed run main.js using
 ```bash
 node main.js
 ```
 Wait for several seconds/minutes (depending on your connection).
-You follow the execution in the terminal.
-When the script is done, you can find the result in the file result.txt next to main.js file
+You can follow the execution in the terminal.
+When the script is done, you can find the result in the file result.csv next to main.js file
+
+## Result
+The resulat is a csv file using ; as separator, it follows this pattern: 
+[INGAMEDAY];[TIME_SINCE_EPOCH];[CROPS_1];[CROPS_2];[CROPS_3];
 
 ## How it collects the data
 First the bot connect to Hypixel IP which is mc.hypixel.net:25565.
-When he is connected, he will wait until a MVP+ or more join the server because when a MVP+ join there is this message : '[PSEUDO] slid into the lobby!'
-When the script catch this message the bot run '/skyblock' to join obviously skyblock.
+When he is connected, he will wait at least 10 seconds, when the script catch a message the bot run '/skyblock' to join obviously skyblock.
 This technique is a way to not spam Hypixel server with command when it didn't join skyblock at first time.
 
 Now the second main step is to open the in-game calendar. To do so we just as before wait for the in-game message 'Welcome to Skyblock!' send by the server single everytime you joined Skyblock. Then the bot type /calendar to open a GUI that you may know.
