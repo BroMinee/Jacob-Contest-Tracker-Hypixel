@@ -26,8 +26,11 @@ You can follow the execution in the terminal.
 When the script is done, you can find the result in the file result.csv next to main.js file
 
 ## Result
-The resulat is a csv file using ; as separator, it follows this pattern: 
-[INGAMEDAY];[TIME_SINCE_EPOCH];[CROPS_1];[CROPS_2];[CROPS_3];
+The resulat is a csv file using ; as separator, it follows this pattern:<br />
+[INGAMEDAY];[TIME_SINCE_EPOCH];[CROPS_1];[CROPS_2];[CROPS_3];<br />
+
+
+[See an example](result.csv)
 
 ## How it collects the data
 First the bot connect to Hypixel IP which is mc.hypixel.net:25565.
